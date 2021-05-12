@@ -1,0 +1,33 @@
+<%- include('layouts/top.ejs') %>
+
+    <div class="container">
+
+        <div id="wrapper" class="text-center p-4">
+
+            <section id="login_section">
+                <form action="/users/login" method="POST" class="form text-center p-4">
+
+                    <h2 class="mb-3">Welcome Back!</h2>
+
+                    <% if(messages.error) { %>
+                        <span id="span" style="color: white;" class="form-control mb-2 bg-warning">
+                            <%= messages.error %>
+                        </span>
+                        <% } %>
+
+
+                            <input type="email" id="email" name="email" class="form-control mb-3" placeholder="email"
+                                required />
+
+                            <input type="password" name="password" id="password" class="form-control mb-3"
+                                placeholder="Password" value="12345678" required />
+
+                            <input type="submit" id="submit_login" class="btn form-control p-1" value="Log In" />
+
+                </form>
+            </section>
+        </div>
+
+    </div>
+
+    <%- include('layouts/bot.ejs') %>

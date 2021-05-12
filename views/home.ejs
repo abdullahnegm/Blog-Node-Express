@@ -1,0 +1,130 @@
+<%- include('layouts/top.ejs') %>.
+
+    <div class="container mt-5">
+        <form action="/posts/search" class="d-flex mb-5">
+            <input name="search" class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
+            <button class="btn btn-outline-primary bg-primary text-dark" type="submit">
+                Search
+            </button>
+        </form>
+        <div id="wrapper">
+            <% posts.results.forEach(function(post){ %>
+
+                <div style="width: 40%; display: inline-block; height: 600px;" class="card mb-3">
+                    <% if (post.image) {%>
+                        <img src="http://127.0.0.1:3001/posts/image/<%= post._id %>" class="card-img-top"
+                            height="300px" />
+                        <% } else { %>
+                            <img src="images.jpg" class="card-img-top" height="300px">
+                            <% } %>
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <a style="text-decoration: none;" href="/posts/<%= post._id %>">
+                                            <%= post.title %>
+                                        </a>
+                                    </h5>
+                                    <p class="card-text">
+                                        <%= post.body %>
+                                    </p>
+                                    <p class="card-text"><small class="text-muted">
+                                            <small class="text-muted">Written By: <%= post.author.username %>
+                                            </small>
+                                            <% if(locals.user) { %>
+                                                <% if(post.author.email!=user.email) { %>
+                                                    <button class="btn btn-primary hi" onclick="check_follow(event)"
+                                                        value=<%=post.author._id %>>
+                                                        <% if(user.is_followed(post.author._id)) { %>
+                                                            UnFollow
+                                                            <% } else { %>
+                                                                Follow
+                                                                <% } %>
+                                                    </button>
+                                                    <% } %>
+                                                        <% } %>
+                                                            <br>
+                                                            <%= post.createdAt %>
+                                        </small></p>
+                                </div>
+                </div>
+                <% }) %>
+        </div>
+        <nav aria-label="...">
+            <ul class="pagination">
+                <% if (posts.previous){ %>
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="/posts?page=<%= posts.previous.page %>&limit=<%= posts.previous.limit %>">Previous</a>
+                    </li>
+                    <% } else { %>
+                        <li class="page-item disabled">
+                            <span class="page-link">Previous</span>
+                        </li>
+                        <% } %>
+
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <!-- <li class="page-item" aria-current="page">
+                            <span class="page-link">2</span>
+                        </li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li> -->
+                            <% if (posts.next){ %>
+                                <li class="page-item">
+                                    <a class="page-link"
+                                        href="/posts?page=<%= posts.next.page %>&limit=<%= posts.next.limit %>">Next</a>
+                                </li>
+                                <% } else { %>
+                                    <li class="page-item disabled">
+                                        <span class="page-link" href="#">Next</span>
+                                    </li>
+                                    <% } %>
+            </ul>
+        </nav>
+    </div>
+    <script>
+
+
+        // function search_form(e) {
+        //     const xhr = new XMLHttpRequest()
+
+        //     xhr.open("GET", "/posts/search", true)
+
+        //     xhr.onload = function () {
+        //         if (this.status == 200) {
+
+        //         }
+        //     }
+        // }
+
+
+        function check_follow(e) {
+            var xhr = new XMLHttpRequest()
+
+            xhr.open('GET', `/users/${e.target.value}/follow`, true)
+
+            console.log(e.target.value)
+
+            xhr.setRequestHeader(
+                "Content-Type",
+                "application/x-www-form-urlencoded"
+            );
+
+            xhr.onload = function () {
+                if (this.status == 200) {
+                    let btns = document.querySelectorAll(`[value="${e.target.value}"]`)
+                    str = ''
+                    if (this.responseText == "true") {
+                        str = "UnFollow"
+                    }
+                    else if (this.responseText == "false") {
+                        str = "Follow"
+                    }
+                    for (let i = 0; i < btns.length; i++) {
+                        btns[i].innerHTML = str
+                    }
+
+                }
+            }
+
+            xhr.send(e.id);
+        }
+    </script>
+    <%- include('layouts/bot.ejs') %>.
